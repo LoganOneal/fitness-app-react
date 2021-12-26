@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { query, orderBy, limit, onSnapshot } from "firebase/firestore";  
 
 import { AuthUserContext } from '../Session';
 import { withFirebase } from '../Firebase';
@@ -23,25 +24,24 @@ class Messages extends Component {
   onListenForMessages = () => {
     this.setState({ loading: true });
 
-    this.unsubscribe = this.props.firebase
-      .messages()
-      .orderBy('createdAt', 'desc')
-      .limit(this.state.limit)
-      .onSnapshot(snapshot => {
-        if (snapshot.size) {
-          let messages = [];
-          snapshot.forEach(doc =>
-            messages.push({ ...doc.data(), uid: doc.id }),
-          );
+    const q = query(this.props.firebase.messages(), orderBy('createdAt', 'desc'), limit(this.state.limit));
 
-          this.setState({
-            messages: messages.reverse(),
-            loading: false,
-          });
-        } else {
-          this.setState({ messages: null, loading: false });
-        }
-      });
+    this.unsubscribe = onSnapshot(q, (querySnapshot) => {
+      if (querySnapshot.size) {
+        let messages = [];
+        querySnapshot.forEach(doc =>
+          messages.push({ ...doc.data(), uid: doc.id }),
+        );
+
+        this.setState({
+          messages: messages.reverse(),
+          loading: false,
+        });
+      } else {
+        this.setState({ messages: null, loading: false });
+      }
+    });
+
   };
 
   componentWillUnmount() {
