@@ -56,7 +56,7 @@ class Messages extends Component {
     this.props.firebase.messages().add({
       text: this.state.text,
       userId: authUser.uid,
-      createdAt: this.props.firebase.fieldValue.serverTimestamp(),
+      //createdAt: this.props.firebase.fieldValue.serverTimestamp(),
     });
 
     this.setState({ text: '' });
@@ -70,7 +70,7 @@ class Messages extends Component {
     this.props.firebase.message(message.uid).update({
       ...messageSnapshot,
       text,
-      editedAt: this.props.firebase.fieldValue.serverTimestamp(),
+     // editedAt: this.props.firebase.fieldValue.serverTimestamp(),
     });
   };
 

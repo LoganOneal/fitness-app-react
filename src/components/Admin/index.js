@@ -7,8 +7,6 @@ import { UserList, UserItem } from '../Users';
 import * as ROLES from '../../constants/roles';
 import * as ROUTES from '../../constants/routes';
 
-import { AddExercise } from '../Workout';
-
 const AdminPage = () => (
   <div>
     <h1>Admin</h1>
@@ -18,9 +16,7 @@ const AdminPage = () => (
       <Route exact path={ROUTES.ADMIN_DETAILS} component={UserItem} />
       <Route exact path={ROUTES.ADMIN} component={UserList} />
     </Switch>
-    
-    <AddExercise>
-    </AddExercise>
+
   </div>
 );
 
