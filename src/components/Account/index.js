@@ -57,8 +57,7 @@ class LoginManagementBase extends Component {
   }
 
   fetchSignInMethods = () => {
-    this.props.firebase.auth
-      .fetchSignInMethodsForEmail(this.props.authUser.email)
+    this.props.firebase.dofetchSignInMethodsForEmail(this.props.authUser.email)
       .then(activeSignInMethods =>
         this.setState({ activeSignInMethods, error: null }),
       )

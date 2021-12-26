@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, linkWithCredential, EmailAuthProvider, 
-  GoogleAuthProvider, FacebookAuthProvider, TwitterAuthProvider
+  GoogleAuthProvider, FacebookAuthProvider, TwitterAuthProvider, fetchSignInMethodsForEmail
 } from "firebase/auth";
 import { getFirestore, 
   collection, doc, getDoc
@@ -34,7 +34,6 @@ class Firebase {
   }
 
   // *** Auth API ***
-
   doCreateUserWithEmailAndPassword = (email, password) =>
     this.auth.createUserWithEmailAndPassword(email, password);
 
@@ -62,8 +61,10 @@ class Firebase {
   doPasswordUpdate = password =>
     this.auth.currentUser.updatePassword(password);
 
-  // *** Merge Auth and DB User API *** //
+  dofetchSignInMethodsForEmail = email => fetchSignInMethodsForEmail(this.auth, email);
 
+
+  // *** Merge Auth and DB User API *** //
   onAuthUserListener = (next, fallback) =>
     this.auth.onAuthStateChanged(authUser => {
       if (authUser) {
