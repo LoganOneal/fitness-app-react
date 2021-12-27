@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, linkWithCredential, EmailAuthProvider, 
-  GoogleAuthProvider, FacebookAuthProvider, TwitterAuthProvider, fetchSignInMethodsForEmail
+  GoogleAuthProvider, FacebookAuthProvider, TwitterAuthProvider, fetchSignInMethodsForEmail, 
+  signInWithEmailAndPassword, signInWithPopup, createUserWithEmailAndPassword, sendPasswordResetEmail, sendEmailVerification 
 } from "firebase/auth";
 import { getFirestore, 
   collection, doc, getDoc
@@ -35,28 +36,26 @@ class Firebase {
 
   // *** Auth API ***
   doCreateUserWithEmailAndPassword = (email, password) =>
-    this.auth.createUserWithEmailAndPassword(email, password);
+    createUserWithEmailAndPassword(this.auth, email, password);
 
   doSignInWithEmailAndPassword = (email, password) =>
-    this.auth.signInWithEmailAndPassword(email, password);
+    signInWithEmailAndPassword(this.auth, email, password);
 
   doSignInWithGoogle = () =>
-    this.auth.signInWithPopup(this.googleProvider);
+    signInWithPopup(this.auth, this.googleProvider);
 
   doSignInWithFacebook = () =>
-    this.auth.signInWithPopup(this.facebookProvider);
+  signInWithPopup(this.auth, this.facebookProvider);
 
   doSignInWithTwitter = () =>
-    this.auth.signInWithPopup(this.twitterProvider);
+    signInWithPopup(this.auth, this.twitterProvider);
 
   doSignOut = () => this.auth.signOut();
 
-  doPasswordReset = email => this.auth.sendPasswordResetEmail(email);
+  doPasswordReset = email => sendPasswordResetEmail(this.auth. email);
 
   doSendEmailVerification = () =>
-    this.auth.currentUser.sendEmailVerification({
-      url: process.env.REACT_APP_CONFIRMATION_EMAIL_REDIRECT,
-    });
+    sendEmailVerification(this.auth.currentUser);
 
   doPasswordUpdate = password =>
     this.auth.currentUser.updatePassword(password);
@@ -72,6 +71,7 @@ class Firebase {
           .then(snapshot => {
             const dbUser = snapshot.data();
 
+            
             // default empty roles
             if (!dbUser.roles) {
               dbUser.roles = {};

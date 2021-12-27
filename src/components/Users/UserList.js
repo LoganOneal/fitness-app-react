@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import { query, orderBy, limit, onSnapshot } from "firebase/firestore";  
 
 import { withFirebase } from '../Firebase';
 import * as ROUTES from '../../constants/routes';
@@ -17,12 +18,13 @@ class UserList extends Component {
   componentDidMount() {
     this.setState({ loading: true });
 
-    this.unsubscribe = this.props.firebase
-      .users()
-      .onSnapshot(snapshot => {
+    
+    const q = query(this.props.firebase.users());
+
+    this.unsubscribe = onSnapshot(q, (querySnapshot) => {
         let users = [];
 
-        snapshot.forEach(doc =>
+        querySnapshot.forEach(doc =>
           users.push({ ...doc.data(), uid: doc.id }),
         );
 
@@ -30,7 +32,8 @@ class UserList extends Component {
           users,
           loading: false,
         });
-      });
+    });
+
   }
 
   componentWillUnmount() {
