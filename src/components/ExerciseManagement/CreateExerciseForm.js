@@ -115,4 +115,4 @@ class CreateExerciseFormBase extends Component {
 
 const CreateExerciseForm = withFirebase(CreateExerciseFormBase)
 
-export { CreateExerciseForm };
+export default CreateExerciseForm;
