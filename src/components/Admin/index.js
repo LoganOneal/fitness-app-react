@@ -4,6 +4,8 @@ import { compose } from 'recompose';
 
 import { withAuthorization, withEmailVerification } from '../Session';
 import { UserList, UserItem } from '../Users';
+import {CreateExerciseForm} from '../ExerciseManagement/CreateExerciseForm'
+
 import * as ROLES from '../../constants/roles';
 import * as ROUTES from '../../constants/routes';
 
@@ -16,6 +18,11 @@ const AdminPage = () => (
       <Route exact path={ROUTES.ADMIN_DETAILS} component={UserItem} />
       <Route exact path={ROUTES.ADMIN} component={UserList} />
     </Switch>
+
+    <Switch>
+      <Route exact path={ROUTES.ADMIN} component={CreateExerciseForm} />
+    </Switch>
+
 
   </div>
 );

@@ -102,9 +102,8 @@ class Firebase {
   messages = () => collection(this.db, 'messages');
 
   // *** Workout API ***
-  exercise = uid => doc(this.db, "exercises", uid);
+  exercise = name => doc(this.db, "exercises", name);
   exercises = () => collection(this.db, 'exercises');
-
 }
 
 export default Firebase;
