@@ -1,6 +1,11 @@
-import app from 'firebase/app';
-import 'firebase/auth';
-import 'firebase/firestore';
+import { initializeApp } from "firebase/app";
+import { getAuth, linkWithCredential, EmailAuthProvider, 
+  GoogleAuthProvider, FacebookAuthProvider, TwitterAuthProvider, fetchSignInMethodsForEmail, 
+  signInWithEmailAndPassword, signInWithPopup, createUserWithEmailAndPassword, sendPasswordResetEmail, sendEmailVerification 
+} from "firebase/auth";
+import { getFirestore, 
+  collection, doc, getDoc
+} from 'firebase/firestore';
 
 const config = {
   apiKey: process.env.REACT_APP_API_KEY,
@@ -13,64 +18,60 @@ const config = {
 
 class Firebase {
   constructor() {
-    app.initializeApp(config);
+    const app = initializeApp(config);
 
     /* Helper */
-
-    this.fieldValue = app.firestore.FieldValue;
-    this.emailAuthProvider = app.auth.EmailAuthProvider;
+    //this.fieldValue = app.firestore.FieldValue;
+    this.emailAuthProvider = EmailAuthProvider;
 
     /* Firebase APIs */
-
-    this.auth = app.auth();
-    this.db = app.firestore();
+    this.auth = getAuth(app);
+    this.db = getFirestore(app);
 
     /* Social Sign In Method Provider */
-
-    this.googleProvider = new app.auth.GoogleAuthProvider();
-    this.facebookProvider = new app.auth.FacebookAuthProvider();
-    this.twitterProvider = new app.auth.TwitterAuthProvider();
+    this.googleProvider = new GoogleAuthProvider();
+    this.facebookProvider = new FacebookAuthProvider();
+    this.twitterProvider = new TwitterAuthProvider();
   }
 
   // *** Auth API ***
-
   doCreateUserWithEmailAndPassword = (email, password) =>
-    this.auth.createUserWithEmailAndPassword(email, password);
+    createUserWithEmailAndPassword(this.auth, email, password);
 
   doSignInWithEmailAndPassword = (email, password) =>
-    this.auth.signInWithEmailAndPassword(email, password);
+    signInWithEmailAndPassword(this.auth, email, password);
 
   doSignInWithGoogle = () =>
-    this.auth.signInWithPopup(this.googleProvider);
+    signInWithPopup(this.auth, this.googleProvider);
 
   doSignInWithFacebook = () =>
-    this.auth.signInWithPopup(this.facebookProvider);
+  signInWithPopup(this.auth, this.facebookProvider);
 
   doSignInWithTwitter = () =>
-    this.auth.signInWithPopup(this.twitterProvider);
+    signInWithPopup(this.auth, this.twitterProvider);
 
   doSignOut = () => this.auth.signOut();
 
-  doPasswordReset = email => this.auth.sendPasswordResetEmail(email);
+  doPasswordReset = email => sendPasswordResetEmail(this.auth. email);
 
   doSendEmailVerification = () =>
-    this.auth.currentUser.sendEmailVerification({
-      url: process.env.REACT_APP_CONFIRMATION_EMAIL_REDIRECT,
-    });
+    sendEmailVerification(this.auth.currentUser);
 
   doPasswordUpdate = password =>
     this.auth.currentUser.updatePassword(password);
 
-  // *** Merge Auth and DB User API *** //
+  dofetchSignInMethodsForEmail = email => fetchSignInMethodsForEmail(this.auth, email);
 
+
+  // *** Merge Auth and DB User API *** //
   onAuthUserListener = (next, fallback) =>
     this.auth.onAuthStateChanged(authUser => {
       if (authUser) {
-        this.user(authUser.uid)
-          .get()
+        getDoc(this.user(authUser.uid))
           .then(snapshot => {
             const dbUser = snapshot.data();
 
+            
             // default empty roles
             if (!dbUser.roles) {
               dbUser.roles = {};
@@ -93,16 +94,17 @@ class Firebase {
     });
 
   // *** User API ***
-
-  user = uid => this.db.doc(`users/${uid}`);
-
-  users = () => this.db.collection('users');
+  user = uid => doc(this.db, "users", uid);
+  users = () => collection(this.db, 'users');
 
   // *** Message API ***
+  message = uid => doc(this.db, "messages", uid);
+  messages = () => collection(this.db, 'messages');
 
-  message = uid => this.db.doc(`messages/${uid}`);
+  // *** Workout API ***
+  exercise = uid => doc(this.db, "exercises", uid);
+  exercises = () => collection(this.db, 'exercises');
 
-  messages = () => this.db.collection('messages');
 }
 
 export default Firebase;
